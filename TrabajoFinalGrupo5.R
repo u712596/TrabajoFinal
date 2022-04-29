@@ -4,16 +4,18 @@ library(dplyr)
 library(gapminder)
 library(ggplot2)
 library(DBI)
-######################################################## Conecction to MYSQL Section #############################################
+######################################################## Connection to MYSQL Section #############################################
 #db <- dbConnect(RMySQL::MySQL(),
 #                dbname = "mibd",
-#                host = "ec2-54-164-109-177.compute-1.amazonaws.com",
+#                host = "ec2-54-211-72-127.compute-1.amazonaws.com
 #                user = "usuario",
 #                password = rstudioapi::askForPassword("Database password"),
 #                Port = 3306)
 
 #dfec2 <- dbGetQuery(db, 'SELECT * FROM alcohol')
 #dfec2
+
+#Nota el host podria cambiar debido a la naturaleza dinamica del servicio DNS de EC2 de AWS Academy
 #####################################################Conecction to MYSQL Section###################################################
 url <- "https://github.com/imsharvanj/Dr.-Semmelweis-and-the-discovery-of-handwashing/raw/master/notebook%20and%20datasets/datasets/yearly_deaths_by_clinic.csv"
 
@@ -127,7 +129,8 @@ summary(agreg)
 aggr(alcohol, numbers=TRUE, sortComb=TRUE, sortVar=TRUE, only.miss=TRUE)
 
 # Grafico de Matriz ("Matrix plot") ... En RStudio previamente usar: x11()
-matrixplot(alcohol)
+matrixplot(alcohol) 
+
 
 # Boxplots paralelos ("Parallel boxplots")
 VIM::pbox(alcohol[3:7], pos=1)    # pos=1 indica que se desea mostrar la variable 1
@@ -402,3 +405,53 @@ x <- qchisq(ppoints(nrow(dfa_clean)), dof)
 y <- dm2
 qqplot(x, y, main=expression("Q-Q plot para"~~{chi^2}[nu==6]))
 abline(0, 1, col="red")
+
+
+###########################################Shiny Section###################################################################
+library(shiny)
+library(tidyverse)
+
+# Leer datos
+dfs <- read_csv("alcohol_union.csv")
+# Eliminar datos faltantes
+dfs = drop_na(dfs)
+
+
+# Interfaz de usuario
+ui <- fluidPage(
+  
+  # Titulo de la aplicacion
+  titlePanel("Consumo de Alcohol - Rusia"),
+  
+  # Barra con una barra deslizadora para ingresar el número de intervalos
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput("nanio", "Anio de consumo:", value = 1998, min = 1998, max = 2016)
+    ),
+    
+    # Grafico de la distribucion general
+    mainPanel( plotOutput("plot_congreso") )
+  )
+  
+)
+
+# Logica del servidor
+server <- function(input, output) {
+  
+  output$plot_congreso <- renderPlot({
+    
+    ggplot(
+      filter(dfs, anio == input$nanio),
+      aes(x = consumo, color = marca, fill=marca))+
+      geom_density(alpha = 0.5)+
+      xlim(-1.5, 1.5)+
+      xlab("Consumo - Valor nominal")+
+      ylab("Densidad")+
+      scale_fill_manual(values = c("gray", "green", "purple", "orange", "blue"))+
+      scale_color_manual(values = c("gray", "green", "purple", "orange", "blue"))
+  })
+  
+}
+
+
+shinyApp(ui, server)
