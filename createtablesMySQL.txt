@@ -1,0 +1,47 @@
+CREATE TABLE Yearly (
+year INTEGER,
+births INTEGER,
+deaths INTEGER,
+clinic VARCHAR(30)
+
+);
+
+CREATE TABLE Monthly (
+date DATE,
+births INTEGER,
+deaths INTEGER
+);
+
+CREATE TABLE bmw (
+model VARCHAR(30),
+year INTEGER,
+price INTEGER,
+transmission VARCHAR(30),
+mileage INTEGER,
+fuelType VARCHAR(30),
+tax INTEGER,
+mpg INTEGER,
+engineSize DECIMAL);
+
+CREATE TABLE alcohol (
+year INTEGER,
+region VARCHAR(50),
+wine DECIMAL(10,2),
+beer DECIMAL(10,2),
+vodka DECIMAL(10,2),
+champagne DECIMAL(10,2),
+brandy DECIMAL(10,2)
+);
+
+LOAD DATA INFILE '/var/lib/mysql-files/yearly_deaths_by_clinic.csv' 
+INTO TABLE Yearly COLUMNS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;
+
+LOAD DATA INFILE '/var/lib/mysql-files/monthly_deaths.csv'
+INTO TABLE Monthly COLUMNS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;
+
+LOAD DATA INFILE '/var/lib/mysql-files/bmw.csv'
+INTO TABLE bmw COLUMNS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;
+
+LOAD DATA INFILE '/var/lib/mysql-files/alcohol-consumption-in-russia.csv'
+INTO TABLE alcohol COLUMNS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES ;
+
